@@ -29,7 +29,7 @@ func (g GraphHopperPathSuplier) FindPath(from m.Location, to m.Location, vehicle
 	c := http.Client{}
 	res, err := c.Do(req)
 	if err != nil || res.StatusCode != 200 {
-		panic(fmt.Sprintf("Request failed: %d, %s%n", res.StatusCode, res.Body))
+		panic(fmt.Sprintf("Request failed: %d, %s", res.StatusCode, res.Body))
 	}
 	return decodeResponseToPath(res)
 }
