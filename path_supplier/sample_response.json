@@ -1,0 +1,210 @@
+{
+  "hints": {
+    "visited_nodes.average": "6.0",
+    "visited_nodes.sum": "6"
+  },
+  "info": {
+    "copyrights": [
+      "GraphHopper",
+      "OpenStreetMap contributors"
+    ],
+    "took": 1
+  },
+
+  "paths": [
+    {
+      "distance": 293.793,
+      "weight": 174.201829,
+      "time": 211530,
+      "transfers": 0,
+      "points_encoded": false,
+      "bbox": [
+        12.416097,
+        51.131068,
+        12.416611,
+        51.133664
+      ],
+      "points": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            12.416611,
+            51.131068
+          ],
+          [
+            12.416567,
+            51.131741
+          ],
+          [
+            12.41651,
+            51.132054
+          ],
+          [
+            12.416576,
+            51.132178
+          ],
+          [
+            12.416579,
+            51.132229
+          ],
+          [
+            12.416535,
+            51.132298
+          ],
+          [
+            12.416459,
+            51.132517
+          ],
+          [
+            12.416228,
+            51.133423
+          ],
+          [
+            12.416097,
+            51.133664
+          ]
+        ]
+      },
+      "instructions": [
+        {
+          "distance": 293.793,
+          "heading": 357.64,
+          "sign": 0,
+          "interval": [
+            0,
+            8
+          ],
+          "text": "Continue",
+          "time": 211530,
+          "street_name": ""
+        },
+        {
+          "distance": 0.0,
+          "sign": 4,
+          "last_heading": 341.13907122089216,
+          "interval": [
+            8,
+            8
+          ],
+          "text": "Arrive at destination",
+          "time": 0,
+          "street_name": ""
+        }
+      ],
+      "legs": [],
+      "details": {},
+      "ascend": 0.074005126953125,
+      "descend": 1.07000732421875,
+      "snapped_waypoints": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            12.416611,
+            51.131068
+          ],
+          [
+            12.416097,
+            51.133664
+          ]
+        ]
+      }
+    },
+    {
+      "distance": 293.793,
+      "weight": 174.201829,
+      "time": 211530,
+      "transfers": 0,
+      "points_encoded": false,
+      "bbox": [
+        12.416097,
+        51.131068,
+        12.416611,
+        51.133664
+      ],
+      "points": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            12.416611,
+            51.131068
+          ],
+          [
+            12.416567,
+            51.131741
+          ],
+          [
+            12.41651,
+            51.132054
+          ],
+          [
+            12.416576,
+            51.132178
+          ],
+          [
+            12.416579,
+            51.132229
+          ],
+          [
+            12.416535,
+            51.132298
+          ],
+          [
+            12.416459,
+            51.132517
+          ],
+          [
+            12.416228,
+            51.133423
+          ],
+          [
+            12.416097,
+            51.133664
+          ]
+        ]
+      },
+      "instructions": [
+        {
+          "distance": 293.793,
+          "heading": 357.64,
+          "sign": 0,
+          "interval": [
+            0,
+            8
+          ],
+          "text": "Continue",
+          "time": 211530,
+          "street_name": ""
+        },
+        {
+          "distance": 0.0,
+          "sign": 4,
+          "last_heading": 341.13907122089216,
+          "interval": [
+            8,
+            8
+          ],
+          "text": "Arrive at destination",
+          "time": 0,
+          "street_name": ""
+        }
+      ],
+      "legs": [],
+      "details": {},
+      "ascend": 0.074005126953125,
+      "descend": 1.07000732421875,
+      "snapped_waypoints": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            12.416611,
+            51.131068
+          ],
+          [
+            12.416097,
+            51.133664
+          ]
+        ]
+      }
+    }
+  ]
+}
