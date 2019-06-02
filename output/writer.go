@@ -3,8 +3,8 @@ package output
 import "time"
 
 type Writer interface {
-	init(string) error
-	writeEntry(TimedLocationEntry) error
+	Init(string) error
+	WriteEntry(TimedLocationEntry) error
 	writeEntryBatch([]TimedLocationEntry) error
 	finalize() error
 }
