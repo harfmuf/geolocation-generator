@@ -9,7 +9,7 @@ import (
 )
 
 // precision to around .0001 deg, which corresponds to max 10m
-const URL_FORMAT = "%s%s?point=%.4f,%.4f&point=%.4f,%.4f&vehicle=%s&key=%s&points_encoded=false"
+const URL_FORMAT = "%s%s?point=%.5f,%.5f&point=%.5f,%.5f&vehicle=%s&key=%s&points_encoded=false"
 const GRAPHHOPPER_API_URL_BASE = "https://graphhopper.com/api/1"
 const ROUTING_API_URL = "/route"
 
@@ -19,22 +19,14 @@ type GraphHopperPathSuplier struct {
 }
 
 type GraphHopperResponse struct {
-	Paths []Path
+	Paths []struct {
+		Points struct {
+			Coordinates [][]float64
+		}
+	}
 }
 
-type Path struct {
-	Points Points
-}
-
-type Points struct {
-	Coordinates [][]float64
-}
-
-func New(baseUrl string, apiKey string) *GraphHopperPathSuplier {
-	return &GraphHopperPathSuplier{apiKey: apiKey, baseUrl: baseUrl}
-}
-
-func (g GraphHopperPathSuplier) FindPath(from m.Location, to m.Location, vehicle string) [][]m.Location {
+func (g *GraphHopperPathSuplier) FindPath(from *m.Location, to *m.Location, vehicle string) [][]m.Location {
 	url := g.GetUrlFromLocations(from, to, vehicle)
 	req, _ := http.NewRequest(http.MethodGet, url, nil)
 	c := http.Client{}
@@ -42,20 +34,20 @@ func (g GraphHopperPathSuplier) FindPath(from m.Location, to m.Location, vehicle
 	if err != nil || res.StatusCode != 200 {
 		panic(fmt.Sprintf("Request failed: %d, %s", res.StatusCode, res.Body))
 	}
-	return g.DecodeResponseToPath(res)
+	return decodeResponseToPath(res)
 }
 
-func (g GraphHopperPathSuplier) DecodeResponseToPath(response *http.Response) [][]m.Location {
+func decodeResponseToPath(response *http.Response) [][]m.Location {
 	var bodyDecoded GraphHopperResponse
 	body, err := ioutil.ReadAll(response.Body)
 	defer response.Body.Close()
 	validateErr(err)
 	err = json.Unmarshal(body, &bodyDecoded)
 	validateErr(err)
-	return getPathsArrayFromJson(bodyDecoded)
+	return getPathsArrayFromJson(&bodyDecoded)
 }
 
-func getPathsArrayFromJson(json GraphHopperResponse) [][]m.Location {
+func getPathsArrayFromJson(json *GraphHopperResponse) [][]m.Location {
 	paths := make([][]m.Location, len(json.Paths))
 	for i, path := range json.Paths {
 		currResult := make([]m.Location, len(path.Points.Coordinates))
@@ -73,7 +65,7 @@ func validateErr(err error) {
 	}
 }
 
-func (g GraphHopperPathSuplier) GetUrlFromLocations(from m.Location, to m.Location, vehicle string) string {
+func (g *GraphHopperPathSuplier) GetUrlFromLocations(from *m.Location, to *m.Location, vehicle string) string {
 	fromLat := from.Latitude
 	fromLon := from.Longitude
 

@@ -5,5 +5,5 @@ import (
 )
 
 type PathSupplier interface {
-	FindPath(m.Location, m.Location, string) [][]m.Location
+	FindPath(*m.Location, *m.Location, string) [][]m.Location
 }
