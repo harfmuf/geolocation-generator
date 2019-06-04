@@ -9,9 +9,9 @@ const earthRadius = 6371
 const oneDegree = earthRadius * 2 * math.Pi / 360 * 1000
 
 type Location struct {
-	Latitude     float64
-	Longitude    float64
-	RandomRadius float64
+	Latitude     float64 `json:"latitude"`
+	Longitude    float64 `json:"longitude"`
+	RandomRadius float64 `json:"randomRadius"`
 }
 
 func (l1 *Location) Distance(l2 *Location) float64 {

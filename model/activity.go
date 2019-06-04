@@ -1,10 +1,10 @@
 package model
 
 type Activity struct {
-	Location  Location
-	Duration  float64
-	Chance    int
+	Location  Location `json:"location"`
+	Duration  float64  `json:"duration"`
+	Chance    int      `json:"chance"`
 	RouteTo   []Location
 	RouteBack []Location
-	Weekdays  []string
+	Weekdays  []string `json:"dayTypes"`
 }
