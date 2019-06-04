@@ -20,10 +20,10 @@ type Conf struct {
 func (c *Conf) RandomActivity(weekday string) *m.Activity {
 	filtered := []*m.Activity{}
 	chanceSum := 0
-	for _, act := range c.Activities {
-		if contains(act.Weekdays, weekday) {
-			filtered = append(filtered, &act)
-			chanceSum += act.Chance
+	for i := range c.Activities {
+		if contains(c.Activities[i].Weekdays, weekday) {
+			filtered = append(filtered, &c.Activities[i])
+			chanceSum += c.Activities[i].Chance
 		}
 	}
 	r := rand.Intn(chanceSum)

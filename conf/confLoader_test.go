@@ -8,7 +8,7 @@ import (
 )
 
 func TestLoadConf(t *testing.T) {
-	conf := LoadConf("params.json")
+	conf, _ := LoadConf("params.json")
 	var timeZero time.Time
 	if conf.Start == timeZero {
 		t.Error("Start not properly initialized")
@@ -29,5 +29,12 @@ func TestLoadConf(t *testing.T) {
 	}
 	if len(conf.Activities) != 3 {
 		t.Error("Activities not properly initialized!")
+	}
+}
+
+func TestLoadConfError(t *testing.T) {
+	conf, err := LoadConf("notExisting.json")
+	if conf != nil || err == nil {
+		t.Error("Expected error did not occurred!")
 	}
 }

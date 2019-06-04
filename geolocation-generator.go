@@ -8,7 +8,10 @@ import (
 )
 
 func main() {
-	conf := c.LoadConf("conf/params.json")
+	conf, err := c.LoadConf("conf/params.json")
+	if err != nil {
+		panic(err)
+	}
 	text, _ := json.Marshal(conf)
 	log.Printf("config is %s", text)
 }
