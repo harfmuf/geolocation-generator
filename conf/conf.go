@@ -12,7 +12,7 @@ type Conf struct {
 	Start      t.Time       `json:"start"`
 	Stop       t.Time       `json:"stop"`
 	Home       m.Location   `json:"home"`
-	Work       m.Location   `json:"work"`
+	Work       m.Activity   `json:"work"`
 	Activities []m.Activity `json:"activities"`
 	Interval   int8         `json:"interval"`
 }

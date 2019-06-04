@@ -46,6 +46,10 @@ func (l1 *Location) RandomLocationInDistance(meters float64) *Location {
 	}
 }
 
+func EqualsLocation(a, b *Location) bool {
+	return a.Distance(b) < 1
+}
+
 func toRadians(deg float64) float64 {
 	return deg / 360 * math.Pi
 }
