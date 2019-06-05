@@ -10,7 +10,7 @@ import (
 )
 
 // precision to around .0001 deg, which corresponds to max 10m
-const URL_FORMAT = "%s%s?point=%.5f,%.5f&point=%.5f,%.5f&vehicle=%s&key=%s&points_encoded=false"
+const URL_FORMAT = "%s%s?point=%.6f,%.6f&point=%.6f,%.6f&vehicle=%s&key=%s&points_encoded=false"
 const GRAPHHOPPER_API_URL_BASE = "https://graphhopper.com/api/1"
 const ROUTING_API_URL = "/route"
 

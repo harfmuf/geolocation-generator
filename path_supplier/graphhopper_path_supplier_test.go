@@ -2,7 +2,6 @@ package path_supplier
 
 import (
 	"github.com/harfmuf/geolocation-generator/model"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"math"
 	"net/http"
@@ -12,6 +11,7 @@ import (
 
 const FAKE_URL = "fakeUrl"
 const FAKE_KEY = "fakeKey"
+const precisionOneTenThousandth = 0.0001
 
 func TestUrlComposedCorrectly(t *testing.T) {
 	g := GraphHopperPathSuplier{FAKE_URL, FAKE_KEY}
@@ -20,7 +20,10 @@ func TestUrlComposedCorrectly(t *testing.T) {
 	vehicle := "car"
 	url := g.GetUrlFromLocations(&from, &to, vehicle)
 
-	assert.Equal(t, url, "fakeUrl/route?point=1.00000,2.00000&point=6.66000,6.66000&vehicle=car&key=fakeKey&points_encoded=false")
+	expected := "fakeUrl/route?point=1.000000,2.000000&point=6.660000,6.660000&vehicle=car&key=fakeKey&points_encoded=false"
+	if url != expected {
+		t.Fatalf("Expected url: %s\nActual: %s", expected, url)
+	}
 }
 
 func TestResponseDecodedCorrectly(t *testing.T) {
@@ -34,8 +37,8 @@ func TestResponseDecodedCorrectly(t *testing.T) {
 	g := GraphHopperPathSuplier{testServer.URL, FAKE_KEY}
 
 	paths, _ := g.FindPath(&model.Location{}, &model.Location{}, "irrelevant")
-	assertAlmostEqual(t, paths[0][0].Latitude, 12.416611)
-	assertAlmostEqual(t, paths[1][2].Longitude, 51.132054)
+	assertAlmostEqual(t, paths[0][0].Latitude, 12.416611, precisionOneTenThousandth)
+	assertAlmostEqual(t, paths[1][2].Longitude, 51.132054, precisionOneTenThousandth)
 }
 
 func TestErrorOnMalformedJson(t *testing.T) {
@@ -65,6 +68,8 @@ func TestErrorOnResponseStatusNotOK(t *testing.T) {
 	}
 }
 
-func assertAlmostEqual(t *testing.T, x float64, y float64) {
-	assert.True(t, math.Abs(x-y) < 0.0001)
+func assertAlmostEqual(t *testing.T, x float64, y float64, precision float64) {
+	if math.Abs(x-y) >= precision {
+		t.Fatalf("")
+	}
 }
