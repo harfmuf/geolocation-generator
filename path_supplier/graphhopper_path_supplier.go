@@ -2,6 +2,7 @@ package path_supplier
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	m "github.com/harfmuf/geolocation-generator/model"
 	"io/ioutil"
@@ -9,7 +10,7 @@ import (
 )
 
 // precision to around .0001 deg, which corresponds to max 10m
-const URL_FORMAT = "%s%s?point=%.4f,%.4f&point=%.4f,%.4f&vehicle=%s&key=%s&points_encoded=false"
+const URL_FORMAT = "%s%s?point=%.6f,%.6f&point=%.6f,%.6f&vehicle=%s&key=%s&points_encoded=false"
 const GRAPHHOPPER_API_URL_BASE = "https://graphhopper.com/api/1"
 const ROUTING_API_URL = "/route"
 
@@ -19,61 +20,54 @@ type GraphHopperPathSuplier struct {
 }
 
 type GraphHopperResponse struct {
-	Paths []Path
+	Paths []struct {
+		Points struct {
+			Coordinates [][]float64
+		}
+	}
 }
 
-type Path struct {
-	Points Points
-}
-
-type Points struct {
-	Coordinates [][]float64
-}
-
-func New(baseUrl string, apiKey string) *GraphHopperPathSuplier {
-	return &GraphHopperPathSuplier{apiKey: apiKey, baseUrl: baseUrl}
-}
-
-func (g GraphHopperPathSuplier) FindPath(from m.Location, to m.Location, vehicle string) [][]m.Location {
+func (g *GraphHopperPathSuplier) FindPath(from *m.Location, to *m.Location, vehicle string) ([][]*m.Location, error) {
 	url := g.GetUrlFromLocations(from, to, vehicle)
 	req, _ := http.NewRequest(http.MethodGet, url, nil)
 	c := http.Client{}
 	res, err := c.Do(req)
-	if err != nil || res.StatusCode != 200 {
-		panic(fmt.Sprintf("Request failed: %d, %s", res.StatusCode, res.Body))
+	if err != nil {
+		return nil, err
 	}
-	return g.DecodeResponseToPath(res)
+	if res.StatusCode != 200 {
+		return nil, errors.New(fmt.Sprintf("Request return status %d, body: %s", res.StatusCode, res.Body))
+	}
+	return decodeResponseToPath(res)
 }
 
-func (g GraphHopperPathSuplier) DecodeResponseToPath(response *http.Response) [][]m.Location {
+func decodeResponseToPath(response *http.Response) ([][]*m.Location, error) {
 	var bodyDecoded GraphHopperResponse
 	body, err := ioutil.ReadAll(response.Body)
 	defer response.Body.Close()
-	validateErr(err)
+	if err != nil {
+		return nil, err
+	}
 	err = json.Unmarshal(body, &bodyDecoded)
-	validateErr(err)
-	return getPathsArrayFromJson(bodyDecoded)
+	if err != nil {
+		return nil, err
+	}
+	return getPathsArrayFromJson(&bodyDecoded), nil
 }
 
-func getPathsArrayFromJson(json GraphHopperResponse) [][]m.Location {
-	paths := make([][]m.Location, len(json.Paths))
+func getPathsArrayFromJson(json *GraphHopperResponse) [][]*m.Location {
+	paths := make([][]*m.Location, len(json.Paths))
 	for i, path := range json.Paths {
-		currResult := make([]m.Location, len(path.Points.Coordinates))
+		currResult := make([]*m.Location, len(path.Points.Coordinates))
 		for j, point := range path.Points.Coordinates {
-			currResult[j] = m.Location{Latitude: point[0], Longitude: point[1]}
+			currResult[j] = &m.Location{Latitude: point[0], Longitude: point[1]}
 		}
 		paths[i] = currResult
 	}
 	return paths
 }
 
-func validateErr(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
-func (g GraphHopperPathSuplier) GetUrlFromLocations(from m.Location, to m.Location, vehicle string) string {
+func (g *GraphHopperPathSuplier) GetUrlFromLocations(from *m.Location, to *m.Location, vehicle string) string {
 	fromLat := from.Latitude
 	fromLon := from.Longitude
 

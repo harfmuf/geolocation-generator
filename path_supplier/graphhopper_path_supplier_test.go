@@ -1,9 +1,7 @@
 package path_supplier
 
 import (
-	"bytes"
 	"github.com/harfmuf/geolocation-generator/model"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"math"
 	"net/http"
@@ -13,16 +11,19 @@ import (
 
 const FAKE_URL = "fakeUrl"
 const FAKE_KEY = "fakeKey"
+const precisionOneTenThousandth = 0.0001
 
 func TestUrlComposedCorrectly(t *testing.T) {
-	//key := os.Getenv("graphhopperKey")
-	g := New(FAKE_URL, FAKE_KEY)
+	g := GraphHopperPathSuplier{FAKE_URL, FAKE_KEY}
 	from := model.Location{Latitude: 1.0, Longitude: 2.0}
 	to := model.Location{Latitude: 6.66, Longitude: 6.66}
 	vehicle := "car"
-	url := g.GetUrlFromLocations(from, to, vehicle)
+	url := g.GetUrlFromLocations(&from, &to, vehicle)
 
-	assert.Equal(t, url, "fakeUrl/route?point=1.0000,2.0000&point=6.6600,6.6600&vehicle=car&key=fakeKey&points_encoded=false")
+	expected := "fakeUrl/route?point=1.000000,2.000000&point=6.660000,6.660000&vehicle=car&key=fakeKey&points_encoded=false"
+	if url != expected {
+		t.Fatalf("Expected url: %s\nActual: %s", expected, url)
+	}
 }
 
 func TestResponseDecodedCorrectly(t *testing.T) {
@@ -33,31 +34,43 @@ func TestResponseDecodedCorrectly(t *testing.T) {
 		res.Write([]byte(payload))
 	}))
 	defer func() { testServer.Close() }()
-	g := New(testServer.URL, FAKE_KEY)
+	g := GraphHopperPathSuplier{testServer.URL, FAKE_KEY}
 
-	paths := g.FindPath(model.Location{}, model.Location{}, "irrelevant")
-	assertAlmostEqual(t, paths[0][0].Latitude, 12.416611)
-	assertAlmostEqual(t, paths[1][2].Longitude, 51.132054)
+	paths, _ := g.FindPath(&model.Location{}, &model.Location{}, "irrelevant")
+	assertAlmostEqual(t, paths[0][0].Latitude, 12.416611, precisionOneTenThousandth)
+	assertAlmostEqual(t, paths[1][2].Longitude, 51.132054, precisionOneTenThousandth)
 }
 
-func TestPanicOnMalformedJson(t *testing.T) {
-	g := New(FAKE_URL, FAKE_KEY)
+func TestErrorOnMalformedJson(t *testing.T) {
 	malformed := []byte(`}`)
-	r := ioutil.NopCloser(bytes.NewReader(malformed))
-	response := http.Response{Body: r}
-	assert.Panics(t, func() { g.DecodeResponseToPath(&response) })
+	testServer := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
+		res.WriteHeader(200)
+		res.Write(malformed)
+	}))
+	defer func() { testServer.Close() }()
+	g := GraphHopperPathSuplier{testServer.URL, FAKE_KEY}
+	_, err := g.FindPath(&model.Location{}, &model.Location{}, "irrelevant")
+	if err == nil {
+		t.Fatalf("Should return error for malformed json. Error not returned")
+	}
 }
 
-func TestPanicOnResponseStatusNotOK(t *testing.T) {
+func TestErrorOnResponseStatusNotOK(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(400)
 		res.Write([]byte("not_funny"))
 	}))
 	defer func() { testServer.Close() }()
-	g := New(testServer.URL, FAKE_KEY)
-	assert.Panics(t, func() { g.FindPath(model.Location{}, model.Location{}, "irrelevant") })
+	g := GraphHopperPathSuplier{testServer.URL, FAKE_KEY}
+	_, err := g.FindPath(&model.Location{}, &model.Location{}, "irrelevant")
+	if err == nil {
+		t.Fatalf("Should return error for status not 200. Error not returned")
+	}
 }
 
-func assertAlmostEqual(t *testing.T, x float64, y float64) {
-	assert.True(t, math.Abs(x-y) < 0.0001)
+// assumption: for most cases precision within 0.000000001 would be sufficient
+func assertAlmostEqual(t *testing.T, x float64, y float64, precision float64) {
+	if math.Abs(x-y) >= precision {
+		t.Fatalf("Numbers not withing %.9f", precision)
+	}
 }

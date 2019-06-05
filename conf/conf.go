@@ -7,22 +7,23 @@ import (
 	m "github.com/harfmuf/geolocation-generator/model"
 )
 
+//Conf represents configuration parameters
 type Conf struct {
-	start      t.Time
-	stop       t.Time
-	home       *m.Location
-	work       *m.Location
-	activities []*m.Activity
-	interval   int8
+	Start      t.Time       `json:"start"`
+	Stop       t.Time       `json:"stop"`
+	Home       m.Location   `json:"home"`
+	Work       m.Activity   `json:"work"`
+	Activities []m.Activity `json:"activities"`
+	Interval   int8         `json:"interval"`
 }
 
 func (c *Conf) RandomActivity(weekday string) *m.Activity {
 	filtered := []*m.Activity{}
 	chanceSum := 0
-	for _, act := range c.activities {
-		if contains(act.Weekdays, weekday) {
-			filtered = append(filtered, act)
-			chanceSum += act.Chance
+	for i := range c.Activities {
+		if contains(c.Activities[i].Weekdays, weekday) {
+			filtered = append(filtered, &c.Activities[i])
+			chanceSum += c.Activities[i].Chance
 		}
 	}
 	r := rand.Intn(chanceSum)

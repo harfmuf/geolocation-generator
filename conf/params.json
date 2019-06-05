@@ -1,85 +1,75 @@
 {
-  "start": "2018-12-03",
-  "stop": "2018-12-04",
-  "frequency": 60,
-  "home":{
-    "latitude": 50.066150,
-	"longitude": 19.875978,
-	"randomRadius": 25
-  },
-  "work":{
-    "location":{
-	  "latitude": 50.077532,
-	  "longitude": 19.936346,
-	  "randomRadius": 30
+	"start": "2018-12-03T00:00:00Z",
+	"stop": "2018-12-04T00:00:00Z",
+	"interval": 60,
+	"home": {
+		"latitude": 50.066150,
+		"longitude": 19.875978,
+		"randomRadius": 25
 	},
-	"duration": 28800,
-	"chance": 0,
-	"dayTypes": [
-	  "WORKDAY"
-    ]
-  },
-  "activities":[
-  {
-    "location":{
-	  "latitude": 50.058017,
-	  "longitude": 19.907899,
-	  "randomRadius": 40
+	"work": {
+		"location": {
+			"latitude": 50.077532,
+			"longitude": 19.936346,
+			"randomRadius": 30
+		},
+		"duration": 28800,
+		"chance": 0,
+		"weekdays": [
+			"MONDAY",
+			"TUESDAY",
+			"WEDNESDAY",
+			"THURSDAY",
+			"FRIDAY"
+		]
 	},
-	"duration": 5000,
-	"chance": 8,
-	"dayTypes": [
-	  "WORKDAY",
-	  "WEEKEND"
-    ]
-  },
-  {
-    "location":{
-	  "latitude": 50.092150,
-	  "longitude": 19.897620,
-	  "randomRadius": 70
-	},
-	"duration": 6000,
-	"chance": 3,
-	"dayTypes": [
-	  "WORKDAY"
-    ]
-  },
-  {
-    "location":{
-	  "latitude": 50.061571,
-	  "longitude": 19.936359,
-	  "randomRadius": 50
-	},
-	"duration": 3600,
-	"chance": 3,
-	"dayTypes": [
-	  "WEEKEND"
-    ]
-  },
-  {
-    "location":{
-	  "latitude": 50.039680,
-	  "longitude": 19.913778,
-	  "randomRadius": 100
-	},
-	"duration": 7200,
-	"chance": 7,
-	"dayTypes": [
-	  "WEEKEND"
-    ]
-  },
-  {
-    "location":{
-	  "latitude": 50.045342,
-	  "longitude": 19.935967,
-	  "randomRadius": 20
-	},
-	"duration": 7200,
-	"chance": 3,
-	"dayTypes": [
-	  "WORKDAY"
-    ]
-  }
-  ]
+	"activities": [
+		{
+			"location": {
+				"latitude": 50.058017,
+				"longitude": 19.907899,
+				"randomRadius": 40
+			},
+			"duration": 5000,
+			"chance": 8,
+			"weekdays": [
+				"MONDAY",
+				"TUESDAY",
+				"WEDNESDAY",
+				"THURSDAY",
+				"FRIDAY",
+				"SATURDAY",
+				"SUNDAY"
+			]
+		},
+		{
+			"location": {
+				"latitude": 50.092150,
+				"longitude": 19.897620,
+				"randomRadius": 70
+			},
+			"duration": 6000,
+			"chance": 3,
+			"weekdays": [
+				"MONDAY",
+				"TUESDAY",
+				"WEDNESDAY",
+				"THURSDAY",
+				"FRIDAY"
+			]
+		},
+		{
+			"location": {
+				"latitude": 50.039680,
+				"longitude": 19.913778,
+				"randomRadius": 100
+			},
+			"duration": 7200,
+			"chance": 7,
+			"weekdays": [
+				"SATURDAY",
+				"SUNDAY"
+			]
+		}
+	]
 }
