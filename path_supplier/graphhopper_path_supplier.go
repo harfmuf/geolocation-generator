@@ -67,12 +67,6 @@ func getPathsArrayFromJson(json *GraphHopperResponse) [][]*m.Location {
 	return paths
 }
 
-func validateErr(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
 func (g *GraphHopperPathSuplier) GetUrlFromLocations(from *m.Location, to *m.Location, vehicle string) string {
 	fromLat := from.Latitude
 	fromLon := from.Longitude

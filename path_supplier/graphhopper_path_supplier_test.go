@@ -68,8 +68,9 @@ func TestErrorOnResponseStatusNotOK(t *testing.T) {
 	}
 }
 
+// assumption: for most cases precision within 0.000000001 would be sufficient
 func assertAlmostEqual(t *testing.T, x float64, y float64, precision float64) {
 	if math.Abs(x-y) >= precision {
-		t.Fatalf("")
+		t.Fatalf("Numbers not withing %.9f", precision)
 	}
 }
