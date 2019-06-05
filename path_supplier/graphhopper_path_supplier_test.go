@@ -33,12 +33,12 @@ func TestResponseDecodedCorrectly(t *testing.T) {
 	defer func() { testServer.Close() }()
 	g := GraphHopperPathSuplier{testServer.URL, FAKE_KEY}
 
-	paths := g.FindPath(&model.Location{}, &model.Location{}, "irrelevant")
+	paths, _ := g.FindPath(&model.Location{}, &model.Location{}, "irrelevant")
 	assertAlmostEqual(t, paths[0][0].Latitude, 12.416611)
 	assertAlmostEqual(t, paths[1][2].Longitude, 51.132054)
 }
 
-func TestPanicOnMalformedJson(t *testing.T) {
+func TestErrorOnMalformedJson(t *testing.T) {
 	malformed := []byte(`}`)
 	testServer := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(200)
@@ -46,17 +46,23 @@ func TestPanicOnMalformedJson(t *testing.T) {
 	}))
 	defer func() { testServer.Close() }()
 	g := GraphHopperPathSuplier{testServer.URL, FAKE_KEY}
-	assert.Panics(t, func() { g.FindPath(&model.Location{}, &model.Location{}, "irrelevant") })
+	_, err := g.FindPath(&model.Location{}, &model.Location{}, "irrelevant")
+	if err == nil {
+		t.Fatalf("Should return error for malformed json. Error not returned")
+	}
 }
 
-func TestPanicOnResponseStatusNotOK(t *testing.T) {
+func TestErrorOnResponseStatusNotOK(t *testing.T) {
 	testServer := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		res.WriteHeader(400)
 		res.Write([]byte("not_funny"))
 	}))
 	defer func() { testServer.Close() }()
 	g := GraphHopperPathSuplier{testServer.URL, FAKE_KEY}
-	assert.Panics(t, func() { g.FindPath(&model.Location{}, &model.Location{}, "irrelevant") })
+	_, err := g.FindPath(&model.Location{}, &model.Location{}, "irrelevant")
+	if err == nil {
+		t.Fatalf("Should return error for status not 200. Error not returned")
+	}
 }
 
 func assertAlmostEqual(t *testing.T, x float64, y float64) {
