@@ -10,9 +10,9 @@ import (
 )
 
 // precision to around .0001 deg, which corresponds to max 10m
-const URL_FORMAT = "%s%s?point=%.6f,%.6f&point=%.6f,%.6f&vehicle=%s&key=%s&points_encoded=false"
-const GRAPHHOPPER_API_URL_BASE = "https://graphhopper.com/api/1"
-const ROUTING_API_URL = "/route"
+const urlFormat = "%s%s?point=%.6f,%.6f&point=%.6f,%.6f&vehicle=%s&key=%s&points_encoded=false"
+const graphhopperApiUrlBase = "https://graphhopper.com/api/1"
+const routingApiUrl = "/route"
 
 type GraphHopperPathSuplier struct {
 	baseUrl string
@@ -74,9 +74,9 @@ func (g *GraphHopperPathSuplier) GetUrlFromLocations(from *m.Location, to *m.Loc
 	toLat := to.Latitude
 	toLon := to.Longitude
 	return fmt.Sprintf(
-		URL_FORMAT,
+		urlFormat,
 		g.baseUrl,
-		ROUTING_API_URL,
+		routingApiUrl,
 		fromLat,
 		fromLon,
 		toLat,
