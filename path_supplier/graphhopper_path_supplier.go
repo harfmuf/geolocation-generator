@@ -2,6 +2,7 @@ package path_supplier
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	m "github.com/harfmuf/geolocation-generator/model"
 	"io/ioutil"
@@ -26,33 +27,40 @@ type GraphHopperResponse struct {
 	}
 }
 
-func (g *GraphHopperPathSuplier) FindPath(from *m.Location, to *m.Location, vehicle string) [][]m.Location {
+func (g *GraphHopperPathSuplier) FindPath(from *m.Location, to *m.Location, vehicle string) ([][]*m.Location, error) {
 	url := g.GetUrlFromLocations(from, to, vehicle)
 	req, _ := http.NewRequest(http.MethodGet, url, nil)
 	c := http.Client{}
 	res, err := c.Do(req)
-	if err != nil || res.StatusCode != 200 {
-		panic(fmt.Sprintf("Request failed: %d, %s", res.StatusCode, res.Body))
+	if err != nil {
+		return nil, err
+	}
+	if res.StatusCode != 200 {
+		return nil, errors.New(fmt.Sprintf("Request return status %d, body: %s", res.StatusCode, res.Body))
 	}
 	return decodeResponseToPath(res)
 }
 
-func decodeResponseToPath(response *http.Response) [][]m.Location {
+func decodeResponseToPath(response *http.Response) ([][]*m.Location, error) {
 	var bodyDecoded GraphHopperResponse
 	body, err := ioutil.ReadAll(response.Body)
 	defer response.Body.Close()
-	validateErr(err)
+	if err != nil {
+		return nil, err
+	}
 	err = json.Unmarshal(body, &bodyDecoded)
-	validateErr(err)
-	return getPathsArrayFromJson(&bodyDecoded)
+	if err != nil {
+		return nil, err
+	}
+	return getPathsArrayFromJson(&bodyDecoded), nil
 }
 
-func getPathsArrayFromJson(json *GraphHopperResponse) [][]m.Location {
-	paths := make([][]m.Location, len(json.Paths))
+func getPathsArrayFromJson(json *GraphHopperResponse) [][]*m.Location {
+	paths := make([][]*m.Location, len(json.Paths))
 	for i, path := range json.Paths {
-		currResult := make([]m.Location, len(path.Points.Coordinates))
+		currResult := make([]*m.Location, len(path.Points.Coordinates))
 		for j, point := range path.Points.Coordinates {
-			currResult[j] = m.Location{Latitude: point[0], Longitude: point[1]}
+			currResult[j] = &m.Location{Latitude: point[0], Longitude: point[1]}
 		}
 		paths[i] = currResult
 	}
