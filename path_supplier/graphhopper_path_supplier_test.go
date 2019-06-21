@@ -9,12 +9,12 @@ import (
 	"testing"
 )
 
-const FAKE_URL = "fakeUrl"
-const FAKE_KEY = "fakeKey"
+const fakeUrl = "fakeUrl"
+const fakeKey = "fakeKey"
 const precisionOneTenThousandth = 0.0001
 
 func TestUrlComposedCorrectly(t *testing.T) {
-	g := GraphHopperPathSuplier{FAKE_URL, FAKE_KEY}
+	g := GraphHopperPathSuplier{fakeUrl, fakeKey}
 	from := model.Location{Latitude: 1.0, Longitude: 2.0}
 	to := model.Location{Latitude: 6.66, Longitude: 6.66}
 	vehicle := "car"
@@ -34,7 +34,7 @@ func TestResponseDecodedCorrectly(t *testing.T) {
 		res.Write([]byte(payload))
 	}))
 	defer func() { testServer.Close() }()
-	g := GraphHopperPathSuplier{testServer.URL, FAKE_KEY}
+	g := GraphHopperPathSuplier{testServer.URL, fakeKey}
 
 	paths, _ := g.FindPath(&model.Location{}, &model.Location{}, "irrelevant")
 	assertAlmostEqual(t, paths[0][0].Latitude, 12.416611, precisionOneTenThousandth)
@@ -48,7 +48,7 @@ func TestErrorOnMalformedJson(t *testing.T) {
 		res.Write(malformed)
 	}))
 	defer func() { testServer.Close() }()
-	g := GraphHopperPathSuplier{testServer.URL, FAKE_KEY}
+	g := GraphHopperPathSuplier{testServer.URL, fakeKey}
 	_, err := g.FindPath(&model.Location{}, &model.Location{}, "irrelevant")
 	if err == nil {
 		t.Fatalf("Should return error for malformed json. Error not returned")
@@ -61,7 +61,7 @@ func TestErrorOnResponseStatusNotOK(t *testing.T) {
 		res.Write([]byte("not_funny"))
 	}))
 	defer func() { testServer.Close() }()
-	g := GraphHopperPathSuplier{testServer.URL, FAKE_KEY}
+	g := GraphHopperPathSuplier{testServer.URL, fakeKey}
 	_, err := g.FindPath(&model.Location{}, &model.Location{}, "irrelevant")
 	if err == nil {
 		t.Fatalf("Should return error for status not 200. Error not returned")

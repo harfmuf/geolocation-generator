@@ -1,8 +1,16 @@
 package output
 
+import "time"
+
 type Writer interface {
-	init(string) error
-	writeHeaders(string) error
-	writeData(string) error
-	finalize() error
+	Init(string) error
+	WriteEntry(TimedLocationEntry) error
+	WriteEntryBatch([]TimedLocationEntry) error
+	Finalize() error
+}
+
+type TimedLocationEntry struct {
+	timestamp time.Time
+	latitude  float64
+	longitude float64
 }
