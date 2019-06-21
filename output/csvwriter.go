@@ -2,7 +2,6 @@ package output
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"reflect"
 	"strings"
@@ -18,33 +17,33 @@ func (c *CsvWriter) Init(filename string) error {
 		return err
 	}
 	c.file = file
-	err = writeHeaders(c.file)
+	err = c.writeHeaders()
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func writeHeaders(file io.Writer) error {
+func (c *CsvWriter) writeHeaders() error {
 	t := TimedLocationEntry{}
 	noHeaders := reflect.TypeOf(t).NumField()
 	fieldNames := make([]string, noHeaders)
 	for i := 0; i < noHeaders; i++ {
 		fieldNames[i] = reflect.TypeOf(t).Field(i).Name
 	}
-	_, err := file.Write([]byte(strings.Join(fieldNames, ",")))
+	_, err := c.file.Write([]byte(strings.Join(fieldNames, ",")))
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *CsvWriter) WriteEntry(entry TimedLocationEntry) error {
-	return writeInternal(c.file, entry)
+func (c *CsvWriter) WriteEntry(entry *TimedLocationEntry) error {
+	return c.writeInternal(entry)
 }
-func (c *CsvWriter) writeEntryBatch(entries []TimedLocationEntry) error {
+func (c *CsvWriter) WriteEntryBatch(entries []*TimedLocationEntry) error {
 	for _, entry := range entries {
-		err := writeInternal(c.file, entry)
+		err := c.writeInternal(entry)
 		if err != nil {
 			return err
 		}
@@ -52,17 +51,16 @@ func (c *CsvWriter) writeEntryBatch(entries []TimedLocationEntry) error {
 	return nil
 }
 
-func writeInternal(file io.Writer, entry TimedLocationEntry) error {
-	line := fmt.Sprintf("\n%s,%s,%s,%.4f,%.4f",
+func (c *CsvWriter) writeInternal(entry *TimedLocationEntry) error {
+	const writeFormat = "\n%s,%.6f,%.6f"
+	line := fmt.Sprintf(writeFormat,
 		entry.timestamp,
-		entry.entityId,
-		entry.deviceId,
 		entry.latitude,
 		entry.longitude)
-	_, err := file.Write([]byte(line))
+	_, err := c.file.Write([]byte(line))
 	return err
 }
 
-func (c *CsvWriter) finalize() error {
+func (c *CsvWriter) Finalize() error {
 	return c.file.Close()
 }
